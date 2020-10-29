@@ -1,6 +1,4 @@
-
 import java.lang.reflect.*;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
@@ -11,45 +9,38 @@ public class ToJson {
     private String error;
     private Map<String, Set<RemoteFile>> keywords;
 
-
     public static class RemoteFile {
         private boolean isDirectory;
         private String name;
         private String filePath;
         private long size = -1;
-
-
     }
 
     public static void main(String[] args) throws Exception {
 
-
-        Object Json = Class.forName("ToJson").newInstance();
-        Class<?> cls = Json.getClass();
-
-        Field[] fields = cls.getDeclaredFields();
-        AccessibleObject.setAccessible(fields, true);
-        for (Field field : fields) {
-            Class<?> fld = field.getType();
-
-            if (fld.isPrimitive()) {
-                System.out.println("{\"" + field.getName() + "\":" + "\"" + fld.getName() + "\",");
-
+            Class<ToJson> toJsonClass = ToJson.class;
+            try {
+                Field result = toJsonClass.getDeclaredField("result");
+                System.out.println("{" + "\"" + result.getName() + "\":" + "\"" + result.getType() + "\"");
+                Field keywords = toJsonClass.getDeclaredField("keywords");
+                System.out.println(keywords.getName() + "\":" + "[{" + "\"" + keywords.getGenericType() + "\"");
+                System.out.println("[{");
+                for (Class<?> class1 : ToJson.class.getDeclaredClasses()) {
+                    for (Field field1 : class1.getDeclaredFields()) {
+                        System.out.println("\"" + field1.getName() + "\":" + "\"" + field1.getType() + "\"");
+                    }
+                }
+                System.out.println("]}");
+                System.out.println("]}");
+                Field error = toJsonClass.getDeclaredField("error");
+                System.out.println("\"" + error.getName() + "\":" + "\"" + error.getType() + "\"" + "}");
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
             }
-            if (fld.isArray()) {
-                System.out.println("\"" + field.getName() + "\":" + "\"" + fld.getName() + "\":" + Arrays.deepToString(new Object[]{"\"" + field.getName() + "\":" + "\"" + fld.getName() + "\","}));
-
-            }
-            if (fld.isInstance(args)) {
-
-                System.out.println("\"" + field.getName() + "\":" + "\"" + fld.getName() + "\"}");
-                return;
-            }
-
         }
     }
 
-}
+
 
 
 
